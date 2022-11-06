@@ -10,8 +10,12 @@ function App() {
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
+      if(status === "finished") return;
       switch (event.key) {
         case "Enter": {
+
+          if(words[turn].join("").trim().length !== 5) return;
+
           if (words[turn].join("") === answer) {
             setStatus("finished");
           }
@@ -48,15 +52,22 @@ function App() {
         }
       }
     },
-    [turn, words, answer],
+    [turn, words, answer, status],
   );
+
+
+  useEffect(() => {
+    window.addEventListener("keydown",handleKeyDown) 
+
+    return () => window.removeEventListener("keydown",handleKeyDown)
+  })
 
   return (
     <main className="board">
       {words.map((word, wordIndex) => (
         <section className="word">
           {word.map((letter, letterIndex) => {
-            const isCorrect = false;
+            const isCorrect = (answer.slice(letterIndex, letterIndex + 1)).toLowerCase() === letter.toLowerCase() ? true : false;
             const isPresent =
               letter &&
               wordIndex < turn &&
